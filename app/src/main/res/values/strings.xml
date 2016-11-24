@@ -1,0 +1,26 @@
+<resources>
+    <string name="app_name">Campaign Test</string>
+    <string name="action_settings">Settings</string>
+    <string name="package_name">Application package:</string>
+    <string name="package_name_hint">com.google.example</string>
+    <string name="tracking_id">Tracking id:</string>
+    <string name="tracking_id_hint">15 digits</string>
+    <string name="media_code_parameter">Media Code parameter:</string>
+    <string name="media_code_parameter_hint">any string</string>
+    <string name="media_code_value">Media Code value:</string>
+    <string name="media_code_value_hint">any string</string>
+    <string name="button_test">TEST</string>
+    <string name="button_help">HELP</string>
+    <string name="no_launch_err_text">Tested application should be launched.If this hasn\'t happened, please check if application package name is correctly entered.</string>
+    <string name="html_help"><![CDATA[<h1 style="color: #5e9ca0;">User Guide</h1>
+<p>This application test Webtrekk Installation Campaign. Application launches your application and sends to it referer in the way Android does, when install application from Google Market.</p>
+<p>If your application has integrated with Webtrekk SDK, including special change in manifest for campaign attribution, it should send with next tracking request media code and finalize campaign. Below is instruction for performing test:</p>
+<ol>
+<li>Install Test Application on your Android device.</li>
+<li>Install your application on Android device, but don\'t run. This is important as first run should be performed by Test Application.</li>
+<li>Enter all required attributes, based on hints. After that "TEST" button should be enabled.</li>
+<li>Press "TEST" button. Your application should be launched.</li>
+<li>Do any action with your application that create at least one Webtrekk page tracking.</li>
+<li>After some time check if Campaign is done.</li>
+</ol>]]></string>
+</resources>
