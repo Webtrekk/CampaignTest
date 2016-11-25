@@ -11,7 +11,10 @@
     <string name="media_code_value_hint">any string</string>
     <string name="button_test">TEST</string>
     <string name="button_help">HELP</string>
-    <string name="no_launch_err_text">Tested application should be launched.If this hasn\'t happened, please check if application package name is correctly entered.</string>
+    <string name="error_no_launch">Tested application should be launched.If this hasn\'t happened, please check if application package name is correctly entered.</string>
+    <string name="error_incorrect_referer">Incorrect referrer:%s</string>
+    <string name="error_lack_of_referer">Lack of referrer in url:%s</string>
+    <string name="error_incorrect_package">"Application with package %s isn't installed on this device. Please provide correct package name."</string>
     <string name="html_help"><![CDATA[<h1 style="color: #5e9ca0;">User Guide</h1>
 <p>This application test Webtrekk Installation Campaign. Application launches your application and sends to it referer in the way Android does, when install application from Google Market.</p>
 <p>If your application has integrated with Webtrekk SDK, including special change in manifest for campaign attribution, it should send with next tracking request media code and finalize campaign. Below is instruction for performing test:</p>

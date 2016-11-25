@@ -19,15 +19,19 @@
 
 package com.webtrekk.referrertest;
 
-import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -40,7 +44,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 
-public class MainActivity extends Activity {
+public class MainActivity extends AppCompatActivity {
 
     private EditText mApplicationPackage;
     private EditText mTrackingID;
@@ -48,6 +52,16 @@ public class MainActivity extends Activity {
     private EditText mMediaCodeValue;
     private Button mTestButton;
     private boolean mIsShouldStarted;
+    AlertDialog mAlertDialog;
+
+    private static final String APPLICATION_PACKAGE_SETTING = "APPLICATION_PACKAGE_SETTING";
+    private static final String TRACKING_ID_SETTING = "TRACKING_ID_SETTING";
+    private static final String MEDIA_PARAMETER_SETTING = "MEDIA_PARAMETER_SETTING";
+    private static final String MEDIA_CODE_VALUE = "MEDIA_CODE_VALUE";
+
+    private static final int mEditsIDs[] = {R.id.application_id, R.id.tracking_id, R.id.media_code_par, R.id.media_code_val};
+    private static final String mSettingKeys[] = {APPLICATION_PACKAGE_SETTING, TRACKING_ID_SETTING, MEDIA_PARAMETER_SETTING, MEDIA_CODE_VALUE};
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +73,8 @@ public class MainActivity extends Activity {
         mMediaCodeParameter = (EditText)findViewById(R.id.media_code_par);
         mMediaCodeValue = (EditText)findViewById(R.id.media_code_val);
         mTestButton = (Button)findViewById(R.id.test_button);
+
+        readFromSetting();
 
         TextWatcher textWatcher = new TextWatcher() {
             @Override
@@ -90,15 +106,11 @@ public class MainActivity extends Activity {
             }
         });
 
-        Button helpButton = (Button)findViewById(R.id.help_button);
-        helpButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(MainActivity.this, HelpActivity.class));
-            }
-        });
-
         validateInput();
+
+        Toolbar myToolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(myToolbar);
+        getSupportActionBar().setTitle(null);
     }
 
     private boolean validateInput(){
@@ -139,10 +151,10 @@ public class MainActivity extends Activity {
                                                  processClickID(clickID);
                                                  isProcessed = true;
                                              } else {
-                                                 error = "Incorrect referrer:"+ referrerValue;
+                                                 error = getString(R.string.error_incorrect_referer, referrerValue);
                                              }
                                          } else{
-                                             error = "Lack of referrer in url:"+ url;
+                                             error = getString(R.string.error_lack_of_referer, url);
                                          }
 
                                          if (!isProcessed){
@@ -161,29 +173,100 @@ public class MainActivity extends Activity {
             error = "Undefined error";
         }
 
-        AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
-        alertDialog.setTitle("Error");
-        alertDialog.setMessage(error);
-        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+        if (mAlertDialog == null)
+            mAlertDialog = new AlertDialog.Builder(MainActivity.this).create();
+
+        if (mAlertDialog.isShowing())
+            mAlertDialog.dismiss();
+
+        mAlertDialog.setTitle("Error");
+        mAlertDialog.setMessage(error);
+        mAlertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
                     }
                 });
-        alertDialog.show();
+        mAlertDialog.show();
     }
 
     @Override
     public void onStart(){
         super.onStart();
         mIsShouldStarted = false;
-        findViewById(R.id.final_help_text).setVisibility(View.INVISIBLE);
     }
 
     @Override
     public void onStop(){
         super.onStop();
+
+        saveToSetting();
+        if (mIsShouldStarted && mAlertDialog != null && mAlertDialog.isShowing())
+            mAlertDialog.dismiss();
         mIsShouldStarted = false;
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+    }
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_help) {
+            startActivity(new Intent(MainActivity.this, HelpActivity.class));
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void readFromSetting(){
+
+        SharedPreferences pref = getPreferences(MODE_PRIVATE);
+
+        for (int i = 0; i < mEditsIDs.length; i++) {
+            EditText editCtrl = (EditText)findViewById(mEditsIDs[i]);
+            if (editCtrl != null){
+                String text = pref.getString(mSettingKeys[i], null);
+                if (text != null && !text.isEmpty()){
+                    editCtrl.setText(text);
+                }
+            }
+        }
+    }
+
+    private void saveToSetting()
+    {
+        SharedPreferences.Editor prefEdit = getPreferences(MODE_PRIVATE).edit();
+
+        for (int i = 0; i < mEditsIDs.length; i++) {
+            EditText editCtrl = (EditText)findViewById(mEditsIDs[i]);
+            if (editCtrl != null){
+                String text = editCtrl.getText().toString();
+                if (text != null){
+                    prefEdit.putString(mSettingKeys[i], text);
+                } else {
+                    prefEdit.remove(mSettingKeys[i]);
+                }
+            }
+        }
+        prefEdit.apply();
     }
 
     private void processClickID(String clickID){
@@ -211,8 +294,7 @@ public class MainActivity extends Activity {
             intent.setClassName(packageName, "com.webtrekk.webtrekksdk.ReferrerReceiver");
             sendBroadcast(intent);
 
-            //launc this app
-
+            //launch this app
             Intent launchIntent = getPackageManager().getLaunchIntentForPackage(packageName);
             if (launchIntent != null) {
                 startActivity(launchIntent);
@@ -223,11 +305,7 @@ public class MainActivity extends Activity {
                     @Override
                     public void run() {
                         if (mIsShouldStarted){
-                            View view = MainActivity.this.findViewById(R.id.final_help_text);
-
-                            if (view != null){
-                                view.setVisibility(View.VISIBLE);
-                            }
+                            processError(getString(R.string.error_no_launch));
                         }
                     }
                 }, 2000);
@@ -237,7 +315,7 @@ public class MainActivity extends Activity {
 
         }
             if (!isInstalled){
-                processError("Package " + packageName +" isn't insalled on this device. Please change package name.");
+                processError(getString(R.string.error_incorrect_package, packageName));
             }
     }
 

@@ -17,22 +17,30 @@
 * Created by vartbaronov on 24.11.16.
 */
 
-
 package com.webtrekk.referrertest;
 
-import android.app.Activity;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.webkit.WebView;
 
 
-public class HelpActivity extends Activity {
+public class HelpActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        findViewById(R.id.main_layout).setVisibility(View.INVISIBLE);
+        Toolbar myToolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(myToolbar);
+
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setTitle(null);
+
+        findViewById(R.id.main_layout).setVisibility(View.GONE);
 
         WebView vebView = (WebView)findViewById(R.id.web_view);
 

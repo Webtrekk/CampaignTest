@@ -1,148 +1,128 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:weightSum="11"
     tools:context="com.webtrekk.referrertest.MainActivity">
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="?attr/colorPrimary"
+        android:elevation="4dp"
+        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
     <LinearLayout
         android:id="@+id/main_layout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:weightSum="100">
-    <LinearLayout
-        android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="10"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:orientation="vertical"
         android:weightSum="100">
+        <LinearLayout
+            style="@style/LayoutForCampaignAttr">
+        <Space
+            style="@style/SpaceForCampaignAttr"/>
         <TextView
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:padding="5dp"
-            android:gravity="center_vertical"
-            android:layout_weight="50"
+            style="@style/TextViewForCampaignAttr"
             android:text="@string/package_name"/>
         <EditText
             android:id="@+id/application_id"
-            android:layout_width="0dp"
-            android:layout_weight="50"
-            android:layout_height="match_parent"
-            android:hint="@string/package_name_hint"
-            android:textAppearance="@style/TextAppearance.AppCompat"
-            android:maxLines="1"
-            android:text="com.webtrekk.webtrekksdk.training" />
-    </LinearLayout>
+            style="@style/EdtiTextForCampaignAttr"
+            android:text="de.adac.Auslandshelfer"
+            android:hint="@string/package_name_hint"/>
+   </LinearLayout>
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_weight="10"
-        android:layout_height="0dp">
+        style="@style/LayoutForCampaignAttr">
+        <Space
+           style="@style/SpaceForCampaignAttr"/>
         <TextView
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:padding="5dp"
-            android:gravity="center_vertical"
-            android:layout_weight="50"
+            style="@style/TextViewForCampaignAttr"
             android:text="@string/tracking_id"/>
         <EditText
             android:id="@+id/tracking_id"
-            android:layout_width="0dp"
-            android:layout_weight="50"
-            android:layout_height="match_parent"
+            style="@style/EdtiTextForCampaignAttr"
             android:hint="@string/tracking_id_hint"
-            android:inputType="number"
-            android:textAppearance="@style/TextAppearance.AppCompat"
-            android:maxLines="1"
-            android:text="123451234512345" />
+            android:text="355149037036725"
+            android:inputType="number"/>
     </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_weight="10"
-        android:layout_height="0dp">
+        <LinearLayout
+            style="@style/LayoutForCampaignAttr">
+        <Space
+            style="@style/SpaceForCampaignAttr"/>
         <TextView
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:padding="5dp"
-            android:gravity="center_vertical"
-            android:layout_weight="50"
+            style="@style/TextViewForCampaignAttr"
             android:text="@string/media_code_parameter"/>
         <EditText
             android:id="@+id/media_code_par"
-            android:layout_width="0dp"
-            android:layout_weight="50"
-            android:layout_height="match_parent"
+            style="@style/EdtiTextForCampaignAttr"
             android:hint="@string/media_code_parameter_hint"
             android:text="mc"
-            android:textAppearance="@style/TextAppearance.AppCompat"
-            android:maxLines="1"
+            android:selectAllOnFocus="true" />
+    </LinearLayout>
+        <LinearLayout
+            style="@style/LayoutForCampaignAttr">
+        <Space
+            style="@style/SpaceForCampaignAttr"/>
+        <TextView
+            style="@style/TextViewForCampaignAttr"
+            android:text="@string/media_code_value"/>
+        <EditText
+            android:id="@+id/media_code_val"
+            style="@style/EdtiTextForCampaignAttr"
+            android:hint="@string/media_code_value_hint"
+            android:text="ext.app.auslandshelfer.gdn"
             android:selectAllOnFocus="true" />
     </LinearLayout>
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_weight="10"
-        android:layout_height="0dp">
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:padding="5dp"
-            android:gravity="center_vertical"
-            android:layout_weight="50"
-            android:text="@string/media_code_value"/>
-        <EditText
-            android:id="@+id/media_code_val"
-            android:layout_width="0dp"
-            android:layout_weight="50"
-            android:layout_height="match_parent"
-            android:hint="@string/media_code_value_hint"
-            android:text="mediaCodeTest"
-            android:textAppearance="@style/TextAppearance.AppCompat"
-            android:maxLines="1"
-            android:selectAllOnFocus="true" />
-    </LinearLayout>
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_weight="10"
-        android:layout_height="0dp">
-        <Button
-            android:id="@+id/test_button"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:padding="5dp"
-            android:layout_gravity="center"
-            android:enabled="false"
-            android:text="@string/button_test"/>
-    </FrameLayout>
-    <FrameLayout
-        android:layout_width="match_parent"
+        android:layout_weight="20"
         android:layout_height="0dp"
-        android:layout_weight="40">
-        <TextView
+        android:orientation="vertical"
+        android:weightSum="3">
+        <Space
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:text="@string/no_launch_err_text"
-            android:id="@+id/final_help_text"
-            android:visibility="invisible"
-            android:padding="5dp"
-            android:textColor="@color/colorAccent" />
-    </FrameLayout>
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_weight="10"
-        android:layout_height="0dp">
-        <Button
-            android:id="@+id/help_button"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:padding="5dp"
-            android:layout_marginEnd="5dp"
-            android:layout_gravity="end|center_vertical"
-            android:text="@string/button_help"/>
-    </FrameLayout>
+            android:layout_height="0dp"
+            android:layout_weight="1"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:weightSum="3"
+            android:layout_weight="1">
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"/>
+            <Button
+                android:id="@+id/test_button"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:enabled="true"
+                android:background="@drawable/button_background_color"
+                android:textColor="@drawable/button_text_color"
+                android:text="@string/button_test"/>
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"/>
+        </LinearLayout>
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"/>
+    </LinearLayout>
     </LinearLayout>
     <WebView
         android:id="@+id/web_view"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_weight="10"
+        android:layout_height="0dp"
         android:visibility="gone"/>
-</RelativeLayout>
+</LinearLayout>
