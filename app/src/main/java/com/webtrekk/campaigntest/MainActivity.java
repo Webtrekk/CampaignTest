@@ -140,6 +140,8 @@ public class MainActivity extends AppCompatActivity {
                     enableTrackIDError(true, false);
                 else if (hasFocus &&  (v != mTrackingID || (v == mTrackingID && validateTrackingID())))
                     v.getBackground().setColorFilter(getWTColor(R.color.wt_grey_line), PorterDuff.Mode.SRC_IN);
+
+                // do action tracking here
             }
         };
 
@@ -381,6 +383,8 @@ public class MainActivity extends AppCompatActivity {
             if (!isInstalled){
                 processError(getString(R.string.error_incorrect_package, packageName));
             }
+
+            // do action tracking here
     }
 
     private void saveToAutoList(){
