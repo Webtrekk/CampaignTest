@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:gravity="center_vertical"
+    android:layout_height="match_parent">
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@color/wt_white"
+        android:layout_margin="10dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:orientation="vertical">
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="5dp"
+        android:paddingBottom="5dp"
+        android:textColor="@color/wt_black"
+        android:textStyle="bold"
+        style="@android:style/TextAppearance.Medium"
+        android:text="@string/error_caption"/>
+    <TextView
+        android:id="@+id/error_text"
+        android:paddingTop="5dp"
+        android:paddingBottom="5dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/wt_grey_text"
+        style="@android:style/TextAppearance.Medium"
+        android:text="Some Error text very long text text text text text text text text text"/>
+    <TextView
+        android:id="@+id/error_ok_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end|center_vertical"
+        android:textStyle="bold"
+        android:textColor="@color/wt_blue"
+        android:padding="5dp"
+        style="@android:style/TextAppearance.Medium"
+        android:text="@string/error_ok"/>
+    </LinearLayout>
+</LinearLayout>

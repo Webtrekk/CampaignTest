@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<webtrekkConfiguration>
+  <version>1</version>
+  <trackId>591151063845311</trackId>
+  <trackDomain>https://webtrekkcampaigntestapp01.wt-eu02.net</trackDomain>
+  <sampling>0</sampling>
+  <sendDelay>5</sendDelay>
+  <maxRequests>5000</maxRequests>
+  <resendOnStartEventTime>30</resendOnStartEventTime>
+  <autoTracked>true</autoTracked>
+  <autoTrackAppUpdate>true</autoTrackAppUpdate>
+  <autoTrackAdvertiserId>true</autoTrackAdvertiserId>
+  <autoTrackAppVersionName>true</autoTrackAppVersionName>
+  <autoTrackAppVersionCode>true</autoTrackAppVersionCode>
+  <autoTrackRequestUrlStoreSize>true</autoTrackRequestUrlStoreSize>
+  <autoTrackAppPreInstalled>true</autoTrackAppPreInstalled>
+  <autoTrackApiLevel>true</autoTrackApiLevel>
+  <autoTrackScreenOrientation>true</autoTrackScreenOrientation>
+  <autoTrackConnectionType>true</autoTrackConnectionType>
+  <autoTrackAdvertisementOptOut>true</autoTrackAdvertisementOptOut>
+  <autoTrackPlaystoreUsername>true</autoTrackPlaystoreUsername>
+  <autoTrackPlaystoreMail>true</autoTrackPlaystoreMail>
+  <enableRemoteConfiguration>true</enableRemoteConfiguration>
+  <trackingConfigurationUrl>https://d1r27qvpjiaqj3.cloudfront.net/1119657331748576/40280.xml</trackingConfigurationUrl>
+  <errorLogEnable>true</errorLogEnable>
+  <errorLogLevel>3</errorLogLevel>
+  <screen>
+    <classname type="text">com.webtrekk.campaigntest.MainActivity</classname>
+    <mappingname type="text">MainScreen</mappingname>
+    <autoTracked>true</autoTracked>
+  </screen>
+  <screen>
+    <classname type="text">com.webtrekk.campaigntest.HelpActivity</classname>
+    <mappingname type="text">HelpScreen</mappingname>
+    <autoTracked>true</autoTracked>
+  </screen>
+</webtrekkConfiguration>

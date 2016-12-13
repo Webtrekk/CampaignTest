@@ -3,4 +3,12 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#ff4081</color>
+    <color name="wt_blue">#0592D9</color>
+    <color name="wt_green"> #009688</color>
+    <color name="wt_red">#D50000</color>
+    <color name="wt_grey">#CECECE</color>
+    <color name="wt_grey_text">#58585A</color>
+    <color name="wt_black">#000000</color>
+    <color name="wt_white">#FFFFFF</color>
+    <color name="wt_grey_line">#009688</color>
 </resources>

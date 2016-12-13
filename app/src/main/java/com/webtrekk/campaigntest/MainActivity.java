@@ -17,29 +17,51 @@
 * Created by vartbaronov on 22.11.16.
 */
 
-package com.webtrekk.referrertest;
+package com.webtrekk.campaigntest;
 
+import android.app.DialogFragment;
+import android.app.Fragment;
+import android.app.FragmentTransaction;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.ArraySet;
+import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 
+import com.webtrekk.webtrekksdk.Webtrekk;
+
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -51,16 +73,27 @@ public class MainActivity extends AppCompatActivity {
     private EditText mMediaCodeParameter;
     private EditText mMediaCodeValue;
     private Button mTestButton;
+    private View mTrackIdExclaimer;
     private boolean mIsShouldStarted;
-    AlertDialog mAlertDialog;
 
     private static final String APPLICATION_PACKAGE_SETTING = "APPLICATION_PACKAGE_SETTING";
     private static final String TRACKING_ID_SETTING = "TRACKING_ID_SETTING";
     private static final String MEDIA_PARAMETER_SETTING = "MEDIA_PARAMETER_SETTING";
     private static final String MEDIA_CODE_VALUE = "MEDIA_CODE_VALUE";
 
+    private static final String APPLICATION_PACKAGE_SETTING_LIST = "APPLICATION_PACKAGE_SETTING_LIST";
+    private static final String TRACKING_ID_SETTING_LIST = "TRACKING_ID_SETTING_LIST";
+    private static final String MEDIA_PARAMETER_SETTING_LIST = "MEDIA_PARAMETER_SETTING_LIST";
+    private static final String MEDIA_CODE_VALUE_LIST = "MEDIA_CODE_VALUE_LIST";
+    private static final String LIST_SEPARATOR = "&";
+
     private static final int mEditsIDs[] = {R.id.application_id, R.id.tracking_id, R.id.media_code_par, R.id.media_code_val};
     private static final String mSettingKeys[] = {APPLICATION_PACKAGE_SETTING, TRACKING_ID_SETTING, MEDIA_PARAMETER_SETTING, MEDIA_CODE_VALUE};
+    private static final String mSettingAutoListKeys[] = {APPLICATION_PACKAGE_SETTING_LIST, TRACKING_ID_SETTING_LIST, MEDIA_PARAMETER_SETTING_LIST, MEDIA_CODE_VALUE_LIST};
+
+    private static final int ITEMS_COUNT = 4;
+
+    private static final String ALLERT_DIALOG_TAG_NAME = "ALLERT";
 
 
     @Override
@@ -68,11 +101,14 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        Webtrekk.getInstance().initWebtrekk(getApplication());
+
         mApplicationPackage = (EditText)findViewById(R.id.application_id);
         mTrackingID = (EditText)findViewById(R.id.tracking_id);
         mMediaCodeParameter = (EditText)findViewById(R.id.media_code_par);
         mMediaCodeValue = (EditText)findViewById(R.id.media_code_val);
         mTestButton = (Button)findViewById(R.id.test_button);
+        mTrackIdExclaimer = findViewById(R.id.track_id_exclaimer);
 
         readFromSetting();
 
@@ -90,14 +126,32 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void afterTextChanged(Editable s) {
                 validateInput();
+                if (validateTrackingID() && isTrackIDErrorEnable()){
+                    enableTrackIDError(false, true);
+                }
             }
         };
 
+
+        View.OnFocusChangeListener focusChangeListener = new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus && !validateTrackingID() && v == mTrackingID)
+                    enableTrackIDError(true, false);
+                else if (hasFocus &&  (v != mTrackingID || (v == mTrackingID && validateTrackingID())))
+                    v.getBackground().setColorFilter(getWTColor(R.color.wt_grey_line), PorterDuff.Mode.SRC_IN);
+            }
+        };
 
         mApplicationPackage.addTextChangedListener(textWatcher);
         mTrackingID.addTextChangedListener(textWatcher);
         mMediaCodeParameter.addTextChangedListener(textWatcher);
         mMediaCodeValue.addTextChangedListener(textWatcher);
+
+        mApplicationPackage.setOnFocusChangeListener(focusChangeListener);
+        mTrackingID.setOnFocusChangeListener(focusChangeListener);
+        mMediaCodeParameter.setOnFocusChangeListener(focusChangeListener);
+        mMediaCodeValue.setOnFocusChangeListener(focusChangeListener);
 
         mTestButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -107,19 +161,46 @@ public class MainActivity extends AppCompatActivity {
         });
 
         validateInput();
+        enableTrackIDError(!validateTrackingID() && mTrackingID.getText().length() > 0, false);
 
         Toolbar myToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(myToolbar);
         getSupportActionBar().setTitle(null);
+        applyAdapters();
+
+        View helpMenu = myToolbar.findViewById(R.id.help_menu_button);
+
+        helpMenu.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this, HelpActivity.class));
+            }
+        });
+
+
+        mMediaCodeValue.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_DONE && validateInput()){
+                    runTest();
+                    return true;
+                } else
+                    return false;
+            }
+        });
     }
 
     private boolean validateInput(){
         boolean returnValue = mApplicationPackage.getText().length() > 0 && mMediaCodeParameter.getText().length() > 0 &&
-                mMediaCodeValue.getText().length() > 0 && mTrackingID.getText().length() == 15;
+                mMediaCodeValue.getText().length() > 0 && validateTrackingID();
 
         mTestButton.setEnabled(returnValue);
 
         return returnValue;
+    }
+
+    private boolean validateTrackingID(){
+        return mTrackingID.getText().length() == 15;
     }
 
     private void runTest(){
@@ -157,9 +238,9 @@ public class MainActivity extends AppCompatActivity {
                                              error = getString(R.string.error_lack_of_referer, url);
                                          }
 
-                                         if (!isProcessed){
-                                             processError(error);
-                                         }
+                                         if (!isProcessed)
+                                            processError(error);
+
                                          return true;
                                      }
                                  }
@@ -173,27 +254,33 @@ public class MainActivity extends AppCompatActivity {
             error = "Undefined error";
         }
 
-        if (mAlertDialog == null)
-            mAlertDialog = new AlertDialog.Builder(MainActivity.this).create();
+        FragmentTransaction ft = getFragmentManager().beginTransaction();
 
-        if (mAlertDialog.isShowing())
-            mAlertDialog.dismiss();
+        hideAllertDialog();
 
-        mAlertDialog.setTitle("Error");
-        mAlertDialog.setMessage(error);
-        mAlertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
-        mAlertDialog.show();
+        ft.addToBackStack(null);
+
+        // Create and show the dialog.
+        DialogFragment newFragment = AlertDialogFragment.newInstance(error);
+        newFragment.show(ft, ALLERT_DIALOG_TAG_NAME);
+
+        Webtrekk.getInstance().trackException("Error Message", error.length() > 255 ? error.substring(0, 254) : error);
+    }
+
+    private void hideAllertDialog(){
+        DialogFragment prev = (DialogFragment)getFragmentManager().findFragmentByTag(ALLERT_DIALOG_TAG_NAME);
+
+        if (prev != null) {
+            prev.dismiss();
+        }
     }
 
     @Override
     public void onStart(){
         super.onStart();
         mIsShouldStarted = false;
+        findViewById(R.id.help_menu_button).setVisibility(View.VISIBLE);
+        findViewById(R.id.back_button).setVisibility(View.INVISIBLE);
     }
 
     @Override
@@ -201,8 +288,8 @@ public class MainActivity extends AppCompatActivity {
         super.onStop();
 
         saveToSetting();
-        if (mIsShouldStarted && mAlertDialog != null && mAlertDialog.isShowing())
-            mAlertDialog.dismiss();
+        if (mIsShouldStarted)
+            hideAllertDialog();
         mIsShouldStarted = false;
     }
 
@@ -212,35 +299,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_help) {
-            startActivity(new Intent(MainActivity.this, HelpActivity.class));
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
     private void readFromSetting(){
 
         SharedPreferences pref = getPreferences(MODE_PRIVATE);
 
-        for (int i = 0; i < mEditsIDs.length; i++) {
+        for (int i = 0; i < ITEMS_COUNT; i++) {
             EditText editCtrl = (EditText)findViewById(mEditsIDs[i]);
             if (editCtrl != null){
                 String text = pref.getString(mSettingKeys[i], null);
@@ -255,7 +318,7 @@ public class MainActivity extends AppCompatActivity {
     {
         SharedPreferences.Editor prefEdit = getPreferences(MODE_PRIVATE).edit();
 
-        for (int i = 0; i < mEditsIDs.length; i++) {
+        for (int i = 0; i < ITEMS_COUNT; i++) {
             EditText editCtrl = (EditText)findViewById(mEditsIDs[i]);
             if (editCtrl != null){
                 String text = editCtrl.getText().toString();
@@ -297,6 +360,7 @@ public class MainActivity extends AppCompatActivity {
             //launch this app
             Intent launchIntent = getPackageManager().getLaunchIntentForPackage(packageName);
             if (launchIntent != null) {
+                saveToAutoList();
                 startActivity(launchIntent);
                 mIsShouldStarted = true;
 
@@ -319,6 +383,101 @@ public class MainActivity extends AppCompatActivity {
             }
     }
 
+    private void saveToAutoList(){
+
+        for (int i = 0; i < ITEMS_COUNT; i++){
+            saveItemToAutoList(mEditsIDs[i], mSettingAutoListKeys[i]);
+        }
+    }
+
+    private void saveItemToAutoList(int resID, String settingKey){
+        SharedPreferences pref = getPreferences(MODE_PRIVATE);
+        SharedPreferences.Editor prefEdit = pref.edit();
+
+        AutoCompleteTextView editText = (AutoCompleteTextView)findViewById(resID);
+
+        if (editText == null){
+            Log.e(getLocalClassName(), "can't modify auto list");
+            return;
+        }
+
+        LinkedList<String> originList = getRecommendationList(settingKey, pref);
+
+        if (originList == null){
+            originList = new LinkedList<String>();
+        }
+
+        String strToAdd = editText.getText().toString();
+
+        if (strToAdd != null & !strToAdd.isEmpty() && !originList.contains(strToAdd)){
+            originList.push(strToAdd);
+            prefEdit.putString(settingKey, TextUtils.join(LIST_SEPARATOR, originList)).apply();
+
+            ArrayAdapter<String> adapter = (ArrayAdapter<String>)editText.getAdapter();
+            adapter.insert(strToAdd, adapter.getCount());
+        }
+
+    }
+
+    private List<String> loadAutoList(int index){
+
+        LinkedList<String> list = getRecommendationList(mSettingAutoListKeys[index], null);
+
+        return list == null ? null : list;
+    }
+
+    private void applyAdapters(){
+        for (int i = 0; i < ITEMS_COUNT; i++){
+            AutoCompleteTextView autoComplete = (AutoCompleteTextView)findViewById(mEditsIDs[i]);
+
+            if (autoComplete == null)
+                continue;
+
+            List<String> suggestions = loadAutoList(i);
+
+            if (suggestions == null)
+                suggestions = new ArrayList<String>();
+
+            ArrayAdapter<String> adapter =
+                    new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, new ArrayList<String>(suggestions));
+
+            autoComplete.setAdapter(adapter);
+        }
+    }
+
+    private LinkedList<String> getRecommendationList(String key, SharedPreferences pref){
+
+        SharedPreferences prefLocal = pref == null ? getPreferences(MODE_PRIVATE) : pref;
+        String str = prefLocal.getString(key, null);
+
+        if (str == null || str.isEmpty()){
+            return null;
+        }else {
+            return new LinkedList<String>(Arrays.asList(str.split(LIST_SEPARATOR)));
+        }
+    }
+
+    private void enableTrackIDError(boolean enable, boolean isFocus){
+        mTrackIdExclaimer.setVisibility(enable ? View.VISIBLE : View.INVISIBLE);
+
+        if (enable){
+            mTrackingID.getBackground().setColorFilter(getWTColor(R.color.wt_red), PorterDuff.Mode.SRC_IN);
+        } else{
+            if (isFocus)
+                mTrackingID.getBackground().setColorFilter(getWTColor(R.color.wt_grey_line), PorterDuff.Mode.SRC_IN);
+            else
+                mTrackingID.getBackground().clearColorFilter();
+        }
+    }
+
+    private int getWTColor(int resID){
+        return getResources().getColor(resID);
+    }
+
+    private boolean isTrackIDErrorEnable(){
+        return mTrackIdExclaimer.getVisibility() == View.VISIBLE;
+    }
+
     private static class URLParsel
     {
         final private Map<String, String> mMap = new HashMap<String, String>();
@@ -335,8 +494,9 @@ public class MainActivity extends AppCompatActivity {
             {
                 final String parValue[] = matcher.group().split("=");
 
-                if (parValue.length == 2)
+                if (parValue.length == 2) {
                     mMap.put(parValue[0], parValue[1]);
+                }
                 else
                 {
                     return false;

@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:weightSum="11"
-    tools:context="com.webtrekk.referrertest.MainActivity">
+    tools:context="com.webtrekk.campaigntest.MainActivity">
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
@@ -14,14 +14,25 @@
         android:layout_weight="1"
         android:background="?attr/colorPrimary"
         android:elevation="4dp"
-        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
-        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
+        android:theme="@style/ThemeOverlay.AppCompat.ActionBar">
+        <TextView
+            android:id="@+id/help_menu_button"
+            style="@style/ActionBarTextStyle"
+            android:layout_gravity="end|center_vertical"
+            android:text="@string/button_help"/>
+        <TextView
+            android:id="@+id/back_button"
+            style="@style/ActionBarTextStyle"
+            android:layout_gravity="center_vertical"
+            android:visibility="gone"
+            android:text="@string/back_string"/>
+    </android.support.v7.widget.Toolbar>
     <LinearLayout
         android:id="@+id/main_layout"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="10"
-        android:paddingLeft="10dp"
+        android:paddingLeft="@dimen/main_padding"
         android:paddingRight="10dp"
         android:orientation="vertical"
         android:weightSum="100">
@@ -32,10 +43,9 @@
         <TextView
             style="@style/TextViewForCampaignAttr"
             android:text="@string/package_name"/>
-        <EditText
+        <AutoCompleteTextView
             android:id="@+id/application_id"
             style="@style/EdtiTextForCampaignAttr"
-            android:text="de.adac.Auslandshelfer"
             android:hint="@string/package_name_hint"/>
    </LinearLayout>
     <LinearLayout
@@ -45,26 +55,38 @@
         <TextView
             style="@style/TextViewForCampaignAttr"
             android:text="@string/tracking_id"/>
-        <EditText
+        <AutoCompleteTextView
             android:id="@+id/tracking_id"
             style="@style/EdtiTextForCampaignAttr"
             android:hint="@string/tracking_id_hint"
-            android:text="355149037036725"
             android:inputType="number"/>
     </LinearLayout>
         <LinearLayout
             style="@style/LayoutForCampaignAttr">
-        <Space
-            style="@style/SpaceForCampaignAttr"/>
+        <RelativeLayout
+            android:id="@+id/track_id_exclaimer"
+            style="@style/SpaceForCampaignAttr">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/wt_red"
+                android:textStyle="bold"
+                android:layout_alignParentTop="true"
+                android:text="@string/tracking_id_error_string"/>
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/warning_icon"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentRight="true" />
+        </RelativeLayout>
         <TextView
             style="@style/TextViewForCampaignAttr"
             android:text="@string/media_code_parameter"/>
-        <EditText
+        <AutoCompleteTextView
             android:id="@+id/media_code_par"
             style="@style/EdtiTextForCampaignAttr"
-            android:hint="@string/media_code_parameter_hint"
-            android:text="mc"
-            android:selectAllOnFocus="true" />
+            android:hint="@string/media_code_parameter_hint"/>
     </LinearLayout>
         <LinearLayout
             style="@style/LayoutForCampaignAttr">
@@ -73,12 +95,11 @@
         <TextView
             style="@style/TextViewForCampaignAttr"
             android:text="@string/media_code_value"/>
-        <EditText
+        <AutoCompleteTextView
             android:id="@+id/media_code_val"
             style="@style/EdtiTextForCampaignAttr"
-            android:hint="@string/media_code_value_hint"
-            android:text="ext.app.auslandshelfer.gdn"
-            android:selectAllOnFocus="true" />
+            android:imeOptions="actionDone"
+            android:hint="@string/media_code_value_hint"/>
     </LinearLayout>
     <LinearLayout
         android:layout_width="match_parent"

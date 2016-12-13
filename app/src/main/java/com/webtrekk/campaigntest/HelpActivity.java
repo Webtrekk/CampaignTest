@@ -17,7 +17,7 @@
 * Created by vartbaronov on 24.11.16.
 */
 
-package com.webtrekk.referrertest;
+package com.webtrekk.campaigntest;
 
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
@@ -37,7 +37,6 @@ public class HelpActivity extends AppCompatActivity {
         setSupportActionBar(myToolbar);
 
         ActionBar actionBar = getSupportActionBar();
-        actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setTitle(null);
 
         findViewById(R.id.main_layout).setVisibility(View.GONE);
@@ -46,5 +45,20 @@ public class HelpActivity extends AppCompatActivity {
 
         vebView.setVisibility(View.VISIBLE);
         vebView.loadData(getString(R.string.html_help), "text/html", "UTF-8");
+
+        findViewById(R.id.back_button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
     }
+
+    @Override
+    public void onStart(){
+        super.onStart();
+        findViewById(R.id.help_menu_button).setVisibility(View.INVISIBLE);
+        findViewById(R.id.back_button).setVisibility(View.VISIBLE);
+    }
+
 }
