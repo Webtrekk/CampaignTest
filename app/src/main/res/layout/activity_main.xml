@@ -20,12 +20,13 @@
             style="@style/ActionBarTextStyle"
             android:layout_gravity="end|center_vertical"
             android:text="@string/button_help"/>
-        <TextView
+        <ImageView
             android:id="@+id/back_button"
-            style="@style/ActionBarTextStyle"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
             android:layout_gravity="center_vertical"
             android:visibility="gone"
-            android:text="@string/back_string"/>
+            android:src="@drawable/back"/>
     </android.support.v7.widget.Toolbar>
     <LinearLayout
         android:id="@+id/main_layout"

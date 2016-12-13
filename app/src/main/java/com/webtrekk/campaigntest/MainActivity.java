@@ -141,6 +141,12 @@ public class MainActivity extends AppCompatActivity {
                 else if (hasFocus &&  (v != mTrackingID || (v == mTrackingID && validateTrackingID())))
                     v.getBackground().setColorFilter(getWTColor(R.color.wt_grey_line), PorterDuff.Mode.SRC_IN);
 
+                if (!hasFocus){
+                    EditText et = (EditText)v;
+                    String text = et.getText().toString();
+
+                    et.setText(text.trim());
+                }
                 // do action tracking here
             }
         };
