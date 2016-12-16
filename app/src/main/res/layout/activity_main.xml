@@ -107,16 +107,16 @@
         android:layout_weight="20"
         android:layout_height="0dp"
         android:orientation="vertical"
-        android:weightSum="3">
+        android:weightSum="16">
         <Space
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1"/>
+            android:layout_weight="4"/>
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:weightSum="3"
-            android:layout_weight="1">
+            android:layout_weight="5">
             <Space
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
@@ -135,10 +135,33 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"/>
         </LinearLayout>
-        <Space
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1"/>
+            android:layout_weight="7">
+            <EditText
+                android:id="@+id/horizontal_line"
+                style="@style/EdtiTextForCampaignAttr"
+                android:layout_height="wrap_content"
+                android:paddingBottom="0dp"
+                android:inputType="none"
+                android:editable="false"
+                android:clickable="false"
+                android:focusable="false"
+                android:layout_above="@+id/webtrekk_link"
+                android:imeOptions="actionNone"/>
+            <TextView
+                style="@style/TextViewForCampaignAttr"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:id="@+id/webtrekk_link"
+                android:textColorLink="@color/wt_blue"
+                android:paddingBottom="4dp"
+                android:paddingTop="0dp"
+                android:gravity="center_vertical"
+                android:text="@string/webtrekk_link"/>
+        </RelativeLayout>
     </LinearLayout>
     </LinearLayout>
     <WebView

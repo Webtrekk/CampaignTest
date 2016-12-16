@@ -27,6 +27,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.PorterDuff;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AlertDialog;
@@ -35,6 +36,7 @@ import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.text.method.LinkMovementMethod;
 import android.util.ArraySet;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -185,7 +187,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-
         mMediaCodeValue.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
@@ -196,6 +197,10 @@ public class MainActivity extends AppCompatActivity {
                     return false;
             }
         });
+
+
+        findViewById(R.id.horizontal_line).getBackground().setColorFilter(getWTColor(R.color.wt_blue), PorterDuff.Mode.SRC_IN);
+        ((TextView)findViewById(R.id.webtrekk_link)).setMovementMethod(LinkMovementMethod.getInstance());
     }
 
     private boolean validateInput(){
@@ -481,7 +486,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private int getWTColor(int resID){
-        return getResources().getColor(resID);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            return getResources().getColor(resID, null);
+        }else {
+            return getResources().getColor(resID);
+        }
     }
 
     private boolean isTrackIDErrorEnable(){

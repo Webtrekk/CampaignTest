@@ -29,4 +29,5 @@
     <string name="error_caption">Error</string>
     <string name="error_ok">OK</string>
     <string name="tracking_id_error_string">Tracking id needs to be 15 digits long</string>
+    <string name="webtrekk_link"><a href="http://www.webtrekk.com">Webtrekk</a></string>
 </resources>
