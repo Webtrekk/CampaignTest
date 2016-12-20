@@ -24,6 +24,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
 
 
@@ -41,10 +42,13 @@ public class HelpActivity extends AppCompatActivity {
 
         findViewById(R.id.main_layout).setVisibility(View.GONE);
 
-        WebView vebView = (WebView)findViewById(R.id.web_view);
+        WebView webView = (WebView)findViewById(R.id.web_view);
 
-        vebView.setVisibility(View.VISIBLE);
-        vebView.loadData(getString(R.string.html_help), "text/html", "UTF-8");
+        WebSettings settings = webView.getSettings();
+        settings.setDefaultTextEncodingName("utf-8");
+
+        webView.setVisibility(View.VISIBLE);
+        webView.loadData(getString(R.string.html_help), "text/html; charset=utf-8", "UTF-8");
 
         findViewById(R.id.back_button).setOnClickListener(new View.OnClickListener() {
             @Override
