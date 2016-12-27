@@ -7,7 +7,7 @@ android {
         applicationId "com.webtrekk.campaigntest"
         minSdkVersion 14
         targetSdkVersion 18
-        versionCode 100
+        versionCode 101
         versionName "1.0.1"
     }
     buildTypes {
