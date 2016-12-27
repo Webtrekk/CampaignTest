@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <webtrekkConfiguration>
-  <version>1</version>
+  <version>2</version>
   <trackId>591151063845311</trackId>
   <trackDomain>https://webtrekkcampaigntestapp01.wt-eu02.net</trackDomain>
   <sampling>0</sampling>
-  <sendDelay>5</sendDelay>
+  <sendDelay>300</sendDelay>
   <maxRequests>5000</maxRequests>
   <resendOnStartEventTime>30</resendOnStartEventTime>
   <autoTracked>true</autoTracked>
@@ -22,6 +22,11 @@
   <autoTrackPlaystoreMail>true</autoTrackPlaystoreMail>
   <enableRemoteConfiguration>true</enableRemoteConfiguration>
   <trackingConfigurationUrl>https://d1r27qvpjiaqj3.cloudfront.net/1119657331748576/40280.xml</trackingConfigurationUrl>
+  <globalTrackingParameter>
+    <sessionParameter>
+      <parameter id="1" key="lang"/>
+    </sessionParameter>
+  </globalTrackingParameter>
   <errorLogEnable>true</errorLogEnable>
   <errorLogLevel>3</errorLogLevel>
   <screen>

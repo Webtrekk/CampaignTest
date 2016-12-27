@@ -34,14 +34,19 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
+import android.text.Layout;
+import android.text.Selection;
+import android.text.Spannable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.text.method.LinkMovementMethod;
+import android.text.style.ClickableSpan;
 import android.util.ArraySet;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.webkit.WebView;
@@ -52,6 +57,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.webtrekk.webtrekksdk.TrackingParameter;
 import com.webtrekk.webtrekksdk.Webtrekk;
 
 import java.lang.reflect.Array;
@@ -61,6 +67,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
@@ -93,6 +100,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String mSettingKeys[] = {APPLICATION_PACKAGE_SETTING, TRACKING_ID_SETTING, MEDIA_PARAMETER_SETTING, MEDIA_CODE_VALUE};
     private static final String mSettingAutoListKeys[] = {APPLICATION_PACKAGE_SETTING_LIST, TRACKING_ID_SETTING_LIST, MEDIA_PARAMETER_SETTING_LIST, MEDIA_CODE_VALUE_LIST};
 
+
     private static final int ITEMS_COUNT = 4;
 
     private static final String ALLERT_DIALOG_TAG_NAME = "ALLERT";
@@ -103,7 +111,13 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Webtrekk.getInstance().initWebtrekk(getApplication());
+        Webtrekk track = Webtrekk.getInstance();
+        String currentLanguage = Locale.getDefault().getLanguage();
+
+        currentLanguage = currentLanguage.equals("de") ? currentLanguage : "en";
+
+        track.initWebtrekk(getApplication());
+        track.getCustomParameter().put("lang", currentLanguage);
 
         mApplicationPackage = (EditText)findViewById(R.id.application_id);
         mTrackingID = (EditText)findViewById(R.id.tracking_id);
@@ -138,8 +152,12 @@ public class MainActivity extends AppCompatActivity {
         View.OnFocusChangeListener focusChangeListener = new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
-                if (!hasFocus && !validateTrackingID() && v == mTrackingID)
+
+                boolean isTrackingIDValid = true;
+                if (!hasFocus && !validateTrackingID() && v == mTrackingID) {
                     enableTrackIDError(true, false);
+                    isTrackingIDValid = false;
+                }
                 else if (hasFocus &&  (v != mTrackingID || (v == mTrackingID && validateTrackingID())))
                     v.getBackground().setColorFilter(getWTColor(R.color.wt_grey_line), PorterDuff.Mode.SRC_IN);
 
@@ -148,8 +166,10 @@ public class MainActivity extends AppCompatActivity {
                     String text = et.getText().toString();
 
                     et.setText(text.trim());
+
+                    // do action tracking here
+                    doActionTracking(et, isTrackingIDValid);
                 }
-                // do action tracking here
             }
         };
 
@@ -198,9 +218,71 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-
         findViewById(R.id.horizontal_line).getBackground().setColorFilter(getWTColor(R.color.wt_blue), PorterDuff.Mode.SRC_IN);
-        ((TextView)findViewById(R.id.webtrekk_link)).setMovementMethod(LinkMovementMethod.getInstance());
+        processLink();
+    }
+
+
+    private void processLink(){
+        TextView link = ((TextView)findViewById(R.id.webtrekk_link));
+        link.setMovementMethod(new URLParsel.LocalLinkMovementMethod() {
+            @Override
+            protected void onClickProcessed() {
+                doLinkTrack();
+            }
+        });
+    }
+
+    private void doActionTracking(EditText view, boolean trackingIDValid){
+        Webtrekk track = Webtrekk.getInstance();
+        TrackingParameter tp = new TrackingParameter();
+
+        Map<Integer, String> actionMapName = new HashMap<Integer, String>();
+
+        actionMapName.put(R.id.application_id, removeСolon(getString(R.string.package_name_not_translated)));
+        actionMapName.put(R.id.tracking_id, removeСolon(getString(R.string.tracking_id_not_translated)));
+        actionMapName.put(R.id.media_code_par, removeСolon(getString(R.string.media_code_parameter_not_translated)));
+        actionMapName.put(R.id.media_code_val, removeСolon(getString(R.string.media_code_value_not_translated)));
+
+        tp.add(TrackingParameter.Parameter.ACTION_NAME, actionMapName.get(view.getId()));
+
+        if (view.getText().length() > 0) {
+            tp.add(TrackingParameter.Parameter.ACTION, "1", view.getText().toString());
+        }
+
+        if (view.getId() == R.id.tracking_id){
+            tp.add(TrackingParameter.Parameter.ACTION, "2", trackingIDValid ? "1":"0");
+        }
+
+        track.track(tp);
+    }
+
+    private void doLinkTrack(){
+
+        Webtrekk track = Webtrekk.getInstance();
+        TrackingParameter tp = new TrackingParameter();
+
+       tp.add(TrackingParameter.Parameter.ACTION_NAME, "Link click");
+
+        track.track(tp);
+    }
+
+    private void doTestLink(boolean isSuccess){
+        Webtrekk track = Webtrekk.getInstance();
+        TrackingParameter tp = new TrackingParameter();
+
+        tp.add(TrackingParameter.Parameter.ACTION_NAME, "Test click");
+        tp.add(TrackingParameter.Parameter.ACTION, "1", isSuccess ? "1":"0");
+
+        track.track(tp);
+    }
+
+    private String removeСolon(String str){
+
+        if (str.charAt(str.length() - 1) == ':')
+            return str.substring(0, str.length());
+        else
+            return str;
     }
 
     private boolean validateInput(){
@@ -301,8 +383,10 @@ public class MainActivity extends AppCompatActivity {
         super.onStop();
 
         saveToSetting();
-        if (mIsShouldStarted)
+        if (mIsShouldStarted) {
             hideAllertDialog();
+            doTestLink(true);
+        }
         mIsShouldStarted = false;
     }
 
@@ -383,6 +467,7 @@ public class MainActivity extends AppCompatActivity {
                     public void run() {
                         if (mIsShouldStarted){
                             processError(getString(R.string.error_no_launch));
+                            doTestLink(false);
                         }
                     }
                 }, 2000);
@@ -393,6 +478,7 @@ public class MainActivity extends AppCompatActivity {
         }
             if (!isInstalled){
                 processError(getString(R.string.error_incorrect_package, packageName));
+                doTestLink(false);
             }
 
             // do action tracking here
@@ -528,6 +614,53 @@ public class MainActivity extends AppCompatActivity {
         public String getValue(String key)
         {
             return  mMap.get(key);
+        }
+
+
+        private static abstract class LocalLinkMovementMethod extends LinkMovementMethod{
+
+            @Override
+            public boolean onTouchEvent(TextView widget, Spannable buffer,
+                                        MotionEvent event) {
+                int action = event.getAction();
+
+                if (action == MotionEvent.ACTION_UP ||
+                        action == MotionEvent.ACTION_DOWN) {
+                    int x = (int) event.getX();
+                    int y = (int) event.getY();
+
+                    x -= widget.getTotalPaddingLeft();
+                    y -= widget.getTotalPaddingTop();
+
+                    x += widget.getScrollX();
+                    y += widget.getScrollY();
+
+                    Layout layout = widget.getLayout();
+                    int line = layout.getLineForVertical(y);
+                    int off = layout.getOffsetForHorizontal(line, x);
+
+                    ClickableSpan[] link = buffer.getSpans(off, off, ClickableSpan.class);
+
+                    if (link.length != 0) {
+                        if (action == MotionEvent.ACTION_UP) {
+                            link[0].onClick(widget);
+                            onClickProcessed();
+                        } else if (action == MotionEvent.ACTION_DOWN) {
+                            Selection.setSelection(buffer,
+                                    buffer.getSpanStart(link[0]),
+                                    buffer.getSpanEnd(link[0]));
+                        }
+
+                        return true;
+                    } else {
+                        Selection.removeSelection(buffer);
+                    }
+                }
+
+                return super.onTouchEvent(widget, buffer, event);
+            }
+
+            protected abstract void onClickProcessed();
         }
     }
 
